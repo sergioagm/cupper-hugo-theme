@@ -14,12 +14,26 @@
       {{ $active = or $active (eq .Name $current.Title) }}
       {{ $active = or $active (and (eq .Name "Blog") (eq $current.Section "post")) }}
       {{ $active = or $active (and (eq .Name "Tags") (eq $current.Section "tags")) }}
-      <a href="{{ .URL }}" {{ if $active }}aria-current="page"{{ end }}>
+      {{ $active = or $active (eq (.URL | relLangURL) $current.RelPermalink) }}
+      {{ if (eq .Identifier "lang") }}
+        {{ if $current.IsTranslated }}
+          {{ range $current.Translations }}
+            <a href="{{ .Permalink }}">
+          {{ end }}
+          <svg class="bookmark-icon" aria-hidden="true" focusable="false" viewBox="0 0 40 50">
+            <use xlink:href="#bookmark"></use>
+          </svg>
+          <span class="text">{{ .Name }}</span>
+          </a>
+        {{ end }}
+      {{ else }}
+        <a href="{{ .URL | relLangURL }}" {{ if $active }}aria-current="page"{{ end }}>
         <svg class="bookmark-icon" aria-hidden="true" focusable="false" viewBox="0 0 40 50">
           <use xlink:href="#bookmark"></use>
         </svg>
         <span class="text">{{ .Name }}</span>
       </a>
+      {{ end }}
     </li>
   {{ end }}
   </ul>

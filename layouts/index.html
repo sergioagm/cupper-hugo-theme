@@ -1,6 +1,56 @@
 {{ define "main" }}
   <main id="main">
     <h1>{{ .Title }}</h1>
-    {{ .Content }}
+    <ul class="patterns-list">
+    {{ range first 1 (where .Site.RegularPages "Section" "post") }}
+      <h2>
+        <a href="{{ .Permalink | absLangURL }}">
+          <svg class="bookmark-icon" aria-hidden="true" viewBox="0 0 40 50" focusable="false">
+              <use xlink:href="#bookmark"></use>
+            </svg>
+          {{ .Title }}
+        </a>
+      </h2>
+
+      <div class="date">
+        {{ $dateFormat := "" }}
+        {{ if (eq $.Language.Lang "es")  }}
+          {{ $dateFormat = "02-01-2006" }}
+        {{ else }}
+          {{ $dateFormat = "01-02-2006" }}
+        {{ end }}
+        {{ $publishDate := .PublishDate }}
+        <strong>{{ T "publish_date" }} </strong>{{ $publishDate.Format $dateFormat }}
+        {{ with .Lastmod }}
+          {{ if gt . $publishDate }}
+            <br>
+            <strong>{{ T "last_updated" }} </strong>{{ .Format $dateFormat }}
+          {{ end }}
+        {{ end }}
+      </div>
+
+      {{ with .Params.tags }}
+        <div class="tags">
+          <strong>{{ T "tags" }} </strong>
+          <ul aria-label="{{ T "aria_label_tags" }}">
+            {{ range . }}
+              <li>
+                <svg class="tag-icon" aria-hidden="true" viewBox="0 0 177.16535 177.16535" focusable="false">
+                  <use xlink:href="#tag"></use>
+                </svg>
+                {{ $href := print ("tags/" | relLangURL) (. | urlize) "/" }}
+                <a href="{{ $href }}">{{ . }}</a>
+              </li>
+            {{ end }}
+          </ul>
+        </div>
+      {{ end }}
+
+      {{ partial "toc.html" . }}
+
+      {{ .Content }}
+    {{ end }}
+    </ul>
   </main>
+  {{ partial "disqus.html" . }}
 {{ end }}
