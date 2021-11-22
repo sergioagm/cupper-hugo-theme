@@ -49,8 +49,9 @@
       {{ partial "toc.html" . }}
 
       {{ .Content }}
+
+      {{ partial "disqus.html" . }}
     {{ end }}
     </ul>
   </main>
-  {{ partial "disqus.html" . }}
 {{ end }}
